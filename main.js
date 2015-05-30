@@ -3,6 +3,7 @@ var Config = require('config');
 var Crawler = require("simplecrawler");
 var Cheerio = require('cheerio')
 var fs = require('fs');
+var url = require("url");
 
 //Getting the config
 var mConfig = Config.get('Main');
@@ -13,7 +14,6 @@ var websites = [mConfig.StartHere];
 cruxCrawler.interval = mConfig.Timeout;
 cruxCrawler.maxConcurrency = mConfig.MaxConcurrency;
 cruxCrawler.acceptCookies = mConfig.AcceptCookies;
-//cruxCrawler.discoverResources = true;
 
 var conditionID = cruxCrawler.addFetchCondition(function(parsedURL) {
     return !parsedURL.path.match(/(\.pdf$)|(\.css$)|(\.png$)|(\.gif$)|(\.jpeg$)|(\.js$)/i);
@@ -26,21 +26,17 @@ cruxCrawler.on("fetchcomplete", function(queueItem, response) {
     var $ = Cheerio.load(html);
 
     $("a").each(function(i, element){
-        var link = $(this).attr('href');
-        if(link){
-            var matches = link.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
-            var domain = matches && matches[1];
-            if(domain){
-                if(websites.indexOf(domain) == "-1"){
-                    websites.push(domain);
-                }
+        var rawlink = $(this).attr('href');
+        if(rawlink){
+            link = url.parse(rawlink);
+            if(websites.indexOf(link.href) == "-1" && mConfig.IgnoredDomains.indexOf(link.hostname) == "-1"){
+                websites.push(link.href);
+                cruxCrawler.queue.add(link.protocol, link.hostname, "80", link.pathname);
             }
         }
     });
 
-    websites.forEach(function(website){
-        cruxCrawler.queue.add("http", website, 80, "/");
-    });
+    console.log("Queue count: " + cruxCrawler.queue.length);
 });
 
 cruxCrawler.start();

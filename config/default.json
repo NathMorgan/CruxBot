@@ -1,10 +1,16 @@
 {
     "Main" : {
-        "Timeout" : "5000",
+        "Timeout" : "500",
         "MaxConcurrency" : "20",
         "AcceptCookies" : "false",
         "OutputFile" : "../websites/crawled.xml",
         "StartHere" : "www.tuqiri.net",
-        "EndHere" : "www.google.com"
+        "EndHere" : "www.google.com",
+        "IgnoredDomains" : [
+            "tumblr.com",
+            "youtube.com",
+            "reddit.com",
+            "linkedin.com"
+        ]
     }
 }
