@@ -1,0 +1,10 @@
+{
+    "Main" : {
+        "Timeout" : "5000",
+        "MaxConcurrency" : "20",
+        "AcceptCookies" : "false",
+        "OutputFile" : "../websites/crawled.xml",
+        "StartHere" : "www.tuqiri.net",
+        "EndHere" : "www.google.com"
+    }
+}
